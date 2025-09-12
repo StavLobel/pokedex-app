@@ -218,6 +218,9 @@ $RECYCLE.BIN/
 # .nfs files are created when an open file is removed but is still being accessed
 .nfs*
 
+# Kiro IDE specific files
+.kiro/
+
 # Project specific
 /backend/storage/uploads/temp/*
 /backend/storage/uploads/processed/*
