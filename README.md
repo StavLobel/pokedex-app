@@ -34,7 +34,7 @@ A production-grade Pokédex web application that enables users to identify Poké
 1. Clone the repository:
 ```bash
 git clone <repository-url>
-cd pokemon-image-recognition-app
+cd pokedex-app
 ```
 
 2. Run the setup script:
@@ -122,7 +122,7 @@ make lint
 ## Project Structure
 
 ```
-pokemon-image-recognition-app/
+pokedex-app/
 ├── backend/                    # FastAPI backend
 │   ├── app/
 │   │   ├── api/               # API endpoints
