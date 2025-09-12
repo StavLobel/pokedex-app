@@ -1,5 +1,27 @@
 # Pokemon Image Recognition App
 
+[![Python](https://img.shields.io/badge/Python-3.11+-blue.svg)](https://www.python.org/downloads/)
+[![FastAPI](https://img.shields.io/badge/FastAPI-0.104+-green.svg)](https://fastapi.tiangolo.com/)
+[![PyTorch](https://img.shields.io/badge/PyTorch-2.6+-red.svg)](https://pytorch.org/)
+[![Docker](https://img.shields.io/badge/Docker-Ready-blue.svg)](https://www.docker.com/)
+[![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![Code Style](https://img.shields.io/badge/Code%20Style-Black-black.svg)](https://github.com/psf/black)
+[![Linting](https://img.shields.io/badge/Linting-Flake8-lightgrey.svg)](https://flake8.pycqa.org/)
+[![Type Checking](https://img.shields.io/badge/Type%20Checking-MyPy-blue.svg)](https://mypy.readthedocs.io/)
+
+<!-- Future badges to add during development:
+[![Build Status](https://github.com/StavLobel/pokedex-app/workflows/CI/badge.svg)](https://github.com/StavLobel/pokedex-app/actions)
+[![Coverage](https://codecov.io/gh/StavLobel/pokedex-app/branch/main/graph/badge.svg)](https://codecov.io/gh/StavLobel/pokedex-app)
+[![Security](https://snyk.io/test/github/StavLobel/pokedex-app/badge.svg)](https://snyk.io/test/github/StavLobel/pokedex-app)
+[![Dependencies](https://img.shields.io/badge/Dependencies-Up%20to%20Date-brightgreen.svg)](https://github.com/StavLobel/pokedex-app/network/dependencies)
+[![API Docs](https://img.shields.io/badge/API-Docs-blue.svg)](https://stavlobel.github.io/pokedex-app/docs)
+[![Demo](https://img.shields.io/badge/Demo-Live-success.svg)](https://pokedex-app.example.com)
+[![Docker Pulls](https://img.shields.io/docker/pulls/stavlobel/pokedex-app.svg)](https://hub.docker.com/r/stavlobel/pokedex-app)
+[![GitHub Release](https://img.shields.io/github/v/release/StavLobel/pokedex-app.svg)](https://github.com/StavLobel/pokedex-app/releases)
+[![GitHub Issues](https://img.shields.io/github/issues/StavLobel/pokedex-app.svg)](https://github.com/StavLobel/pokedex-app/issues)
+[![GitHub Stars](https://img.shields.io/github/stars/StavLobel/pokedex-app.svg)](https://github.com/StavLobel/pokedex-app/stargazers)
+-->
+
 A production-grade Pokédex web application that enables users to identify Pokémon through AI-powered image recognition.
 
 ## Features
