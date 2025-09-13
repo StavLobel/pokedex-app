@@ -222,10 +222,21 @@ def update_model_stats(
         _model_stats["error_message"] = error
 
     if prediction_made:
-        _model_stats["total_predictions"] += 1
+        _model_stats["total_predictions"] = _model_stats.get("total_predictions", 0) + 1
         _model_stats["last_prediction_time"] = time.time()
 
 
 def get_model_stats() -> Dict[str, Any]:
     """Get current model statistics"""
     return _model_stats.copy()
+
+
+def reset_model_stats():
+    """Reset model statistics (for testing)"""
+    global _model_stats
+    _model_stats = {
+        "total_predictions": 0,
+        "last_prediction_time": None,
+        "model_loaded": False,
+        "error_message": None,
+    }

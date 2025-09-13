@@ -9,7 +9,7 @@ from unittest.mock import MagicMock, patch
 import pytest
 from fastapi.testclient import TestClient
 
-from app.api.health import _model_stats, get_model_stats, update_model_stats
+from app.api.health import get_model_stats, reset_model_stats, update_model_stats
 from app.main import app
 
 
@@ -150,15 +150,7 @@ class TestModelStatusEndpoint:
 
     def setup_method(self):
         """Reset model stats before each test"""
-        global _model_stats
-        _model_stats.update(
-            {
-                "total_predictions": 0,
-                "last_prediction_time": None,
-                "model_loaded": False,
-                "error_message": None,
-            }
-        )
+        reset_model_stats()
 
     def test_model_status_not_loaded(self, client):
         """Test model status when model is not loaded"""
@@ -263,15 +255,7 @@ class TestModelStatsUtilities:
 
     def setup_method(self):
         """Reset model stats before each test"""
-        global _model_stats
-        _model_stats.update(
-            {
-                "total_predictions": 0,
-                "last_prediction_time": None,
-                "model_loaded": False,
-                "error_message": None,
-            }
-        )
+        reset_model_stats()
 
     def test_update_model_stats_loaded(self):
         """Test updating model loaded status"""

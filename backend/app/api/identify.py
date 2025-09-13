@@ -3,17 +3,14 @@ Pokemon identification API endpoints
 """
 
 import time
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, Optional
 
 import structlog
-from fastapi import APIRouter, Depends, File, HTTPException, UploadFile
+from fastapi import APIRouter, Depends, File, UploadFile
 from pydantic import BaseModel, Field
 
 from app.core.config import get_settings
-from app.models.ai import ImageProcessingError, ModelNotLoadedError, PredictionError
-from app.services.ai_recognition import get_recognition_service
 from app.services.image_validation import ImageValidationError, image_validation_service
-from app.services.pokemon_data import get_pokemon_service
 
 logger = structlog.get_logger(__name__)
 router = APIRouter()
@@ -177,18 +174,7 @@ async def identify_pokemon(
             processing_time_ms=processing_time,
         )
 
-        # Map validation errors to appropriate HTTP status codes
-        status_code_map = {
-            "FILE_TOO_LARGE": 413,
-            "INVALID_FILE_TYPE": 400,
-            "NO_FILE_PROVIDED": 400,
-            "IMAGE_TOO_SMALL": 400,
-            "IMAGE_TOO_LARGE": 400,
-            "INVALID_IMAGE_FORMAT": 400,
-            "PREPROCESSING_ERROR": 422,
-        }
-
-        status_code = status_code_map.get(e.error_code, 400)
+        # Validation error occurred - return error response
 
         return PokemonIdentificationResponse(
             success=False,
