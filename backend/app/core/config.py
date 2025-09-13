@@ -1,77 +1,59 @@
 """
 Application configuration settings
 """
-from typing import List, Optional
-from pydantic import BaseSettings, validator
+from functools import lru_cache
+from typing import List
+
+from pydantic import Field
+from pydantic_settings import BaseSettings
 
 
 class Settings(BaseSettings):
-    """Application settings"""
+    """Application settings with environment variable support"""
     
-    # Application
+    # Application settings
     app_name: str = "Pokemon Image Recognition API"
-    version: str = "1.0.0"
-    environment: str = "development"
-    debug: bool = False
-    log_level: str = "INFO"
+    environment: str = Field(default="development", description="Environment: development, staging, production")
+    debug: bool = Field(default=True, description="Enable debug mode")
     
-    # Database
-    database_url: str = "postgresql://postgres:password@localhost:5432/pokemon_db"
-    database_pool_size: int = 10
-    database_max_overflow: int = 20
+    # API settings
+    api_v1_prefix: str = "/api/v1"
+    allowed_origins: List[str] = Field(default=["http://localhost:3000", "http://localhost:8000"], description="CORS allowed origins")
+    allowed_hosts: List[str] = Field(default=["localhost", "127.0.0.1", "*"], description="Trusted hosts")
     
-    # Redis
-    redis_url: str = "redis://localhost:6379"
-    redis_ttl_pokemon_data: int = 86400  # 24 hours
-    redis_ttl_image_results: int = 3600  # 1 hour
+    # AI Model settings
+    model_path: str = Field(default="models/pokemon_classifier.pkl", description="Path to AI model file")
+    model_type: str = Field(default="mock", description="AI model type: mock, pytorch, tensorflow, onnx")
+    model_confidence_threshold: float = Field(default=0.7, description="Minimum confidence threshold for predictions")
+    model_processing_timeout: int = Field(default=30, description="Model processing timeout in seconds")
     
-    # External APIs
-    pokeapi_base_url: str = "https://pokeapi.co/api/v2"
-    pokeapi_timeout: int = 30
-    pokeapi_retry_attempts: int = 3
+    # Image processing settings
+    image_target_size: tuple = Field(default=(224, 224), description="Target image size for AI model")
+    image_normalize_mean: List[float] = Field(default=[0.485, 0.456, 0.406], description="Image normalization mean")
+    image_normalize_std: List[float] = Field(default=[0.229, 0.224, 0.225], description="Image normalization std")
     
-    # AI Model
-    ai_model_path: str = "./models/pokemon_classifier.pkl"
-    ai_confidence_threshold: float = 0.7
-    ai_max_predictions: int = 3
+    # External API settings
+    pokeapi_base_url: str = Field(default="https://pokeapi.co/api/v2", description="PokéAPI base URL")
+    pokeapi_timeout: int = Field(default=10, description="PokéAPI request timeout in seconds")
     
-    # File Upload
-    max_file_size_mb: int = 10
-    allowed_file_types: str = "image/jpeg,image/png,image/webp"
-    upload_directory: str = "./storage/uploads"
+    # File upload settings
+    max_file_size: int = Field(default=10 * 1024 * 1024, description="Maximum file size in bytes (10MB)")
+    allowed_file_types: List[str] = Field(default=["image/jpeg", "image/png", "image/webp"], description="Allowed file MIME types")
     
-    # Security
-    secret_key: str = "your-secret-key-here"
-    cors_origins: str = "http://localhost:3000,http://localhost:8080"
+    # Database settings (for future use)
+    database_url: str = Field(default="postgresql://user:password@localhost/pokemon_db", description="Database connection URL")
     
-    # Performance
-    max_concurrent_requests: int = 100
-    request_timeout: int = 30
+    # Redis settings (for future use)
+    redis_url: str = Field(default="redis://localhost:6379", description="Redis connection URL")
     
-    # Monitoring
-    enable_metrics: bool = True
-    metrics_port: int = 9090
+    # Logging settings
+    log_level: str = Field(default="INFO", description="Logging level")
+    log_format: str = Field(default="console", description="Log format: json or console")
     
-    @validator("cors_origins", pre=True)
-    def assemble_cors_origins(cls, v: str) -> List[str]:
-        if isinstance(v, str):
-            return [i.strip() for i in v.split(",")]
-        return v
-    
-    @validator("allowed_file_types", pre=True)
-    def assemble_allowed_file_types(cls, v: str) -> List[str]:
-        if isinstance(v, str):
-            return [i.strip() for i in v.split(",")]
-        return v
-    
-    @property
-    def max_file_size_bytes(self) -> int:
-        return self.max_file_size_mb * 1024 * 1024
-    
-    class Config:
-        env_file = ".env"
-        case_sensitive = False
+    model_config = {"env_file": ".env", "case_sensitive": False}
 
 
-# Global settings instance
-settings = Settings()
+@lru_cache()
+def get_settings() -> Settings:
+    """Get cached application settings"""
+    return Settings()
