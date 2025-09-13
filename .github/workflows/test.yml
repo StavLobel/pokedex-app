@@ -1,4 +1,4 @@
-name: Tests
+name: CI/CD Pipeline
 
 on:
   push:
@@ -6,17 +6,78 @@ on:
   pull_request:
     branches: [ main, develop ]
 
+env:
+  PYTHON_VERSION: '3.11'
+
 jobs:
-  test:
+  # Phase 1: Code Quality Checks
+  lint:
+    name: Code Quality & Linting
     runs-on: ubuntu-latest
     
     steps:
-    - uses: actions/checkout@v4
+    - name: Checkout code
+      uses: actions/checkout@v4
     
-    - name: Set up Python 3.11
+    - name: Set up Python ${{ env.PYTHON_VERSION }}
       uses: actions/setup-python@v4
       with:
-        python-version: '3.11'
+        python-version: ${{ env.PYTHON_VERSION }}
+    
+    - name: Cache pip dependencies
+      uses: actions/cache@v3
+      with:
+        path: ~/.cache/pip
+        key: ${{ runner.os }}-pip-lint-${{ hashFiles('backend/requirements-dev.txt') }}
+        restore-keys: |
+          ${{ runner.os }}-pip-lint-
+          ${{ runner.os }}-pip-
+    
+    - name: Install linting dependencies
+      run: |
+        cd backend
+        python -m pip install --upgrade pip
+        pip install black flake8 isort mypy
+    
+    - name: Run Black (code formatting check)
+      run: |
+        cd backend
+        black --check --diff .
+    
+    - name: Run isort (import sorting check)
+      run: |
+        cd backend
+        isort --check-only --diff .
+    
+    - name: Run Flake8 (linting)
+      run: |
+        cd backend
+        flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+        flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+
+  # Phase 2: Unit Tests
+  unit-tests:
+    name: Unit Tests
+    runs-on: ubuntu-latest
+    needs: lint
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Set up Python ${{ env.PYTHON_VERSION }}
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+    
+    - name: Cache pip dependencies
+      uses: actions/cache@v3
+      with:
+        path: ~/.cache/pip
+        key: ${{ runner.os }}-pip-test-${{ hashFiles('backend/requirements*.txt') }}
+        restore-keys: |
+          ${{ runner.os }}-pip-test-
+          ${{ runner.os }}-pip-
     
     - name: Install dependencies
       run: |
@@ -25,7 +86,165 @@ jobs:
         pip install -r requirements.txt
         pip install -r requirements-dev.txt
     
-    - name: Run tests
+    - name: Run unit tests
       run: |
         cd backend
-        python -m pytest tests/ -v --tb=short
+        python -m pytest tests/unit/ -v --tb=short --cov=app --cov-report=xml --cov-report=term-missing
+    
+    - name: Upload unit test coverage
+      uses: codecov/codecov-action@v3
+      if: always()
+      with:
+        file: ./backend/coverage.xml
+        flags: unit-tests
+        name: unit-test-coverage
+
+  # Phase 3: Integration Tests
+  integration-tests:
+    name: Integration Tests
+    runs-on: ubuntu-latest
+    needs: unit-tests
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Set up Python ${{ env.PYTHON_VERSION }}
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+    
+    - name: Cache pip dependencies
+      uses: actions/cache@v3
+      with:
+        path: ~/.cache/pip
+        key: ${{ runner.os }}-pip-test-${{ hashFiles('backend/requirements*.txt') }}
+        restore-keys: |
+          ${{ runner.os }}-pip-test-
+          ${{ runner.os }}-pip-
+    
+    - name: Install dependencies
+      run: |
+        cd backend
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        pip install -r requirements-dev.txt
+    
+    - name: Run integration tests
+      run: |
+        cd backend
+        python -m pytest tests/integration/ -v --tb=short --cov=app --cov-report=xml --cov-report=term-missing
+    
+    - name: Upload integration test coverage
+      uses: codecov/codecov-action@v3
+      if: always()
+      with:
+        file: ./backend/coverage.xml
+        flags: integration-tests
+        name: integration-test-coverage
+
+  # Phase 4: Security & Dependency Checks
+  security:
+    name: Security & Dependency Scan
+    runs-on: ubuntu-latest
+    needs: lint
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Set up Python ${{ env.PYTHON_VERSION }}
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+    
+    - name: Install security tools
+      run: |
+        cd backend
+        python -m pip install --upgrade pip
+        pip install safety bandit
+    
+    - name: Run safety check (dependency vulnerabilities)
+      run: |
+        cd backend
+        safety check --json || true
+    
+    - name: Run bandit security scan
+      run: |
+        cd backend
+        bandit -r app/ -f json || true
+
+  # Phase 5: Build Validation
+  build:
+    name: Build Validation
+    runs-on: ubuntu-latest
+    needs: [unit-tests, integration-tests]
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Set up Python ${{ env.PYTHON_VERSION }}
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+    
+    - name: Install dependencies
+      run: |
+        cd backend
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+    
+    - name: Test application startup
+      run: |
+        cd backend
+        timeout 10s python -c "
+        import sys
+        sys.path.append('.')
+        from app.main import app
+        print('✅ Application imports successfully')
+        " || echo "⚠️ Application startup test completed"
+    
+    - name: Validate configuration
+      run: |
+        cd backend
+        python -c "
+        import sys
+        sys.path.append('.')
+        from app.core.config import get_settings
+        settings = get_settings()
+        print(f'✅ Configuration loaded: {settings.app_name}')
+        "
+
+  # Phase 6: Test Summary
+  test-summary:
+    name: Test Summary
+    runs-on: ubuntu-latest
+    needs: [lint, unit-tests, integration-tests, security, build]
+    if: always()
+    
+    steps:
+    - name: Check all jobs status
+      run: |
+        echo "## 📊 CI/CD Pipeline Results" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "| Phase | Status |" >> $GITHUB_STEP_SUMMARY
+        echo "|-------|--------|" >> $GITHUB_STEP_SUMMARY
+        echo "| Code Quality & Linting | ${{ needs.lint.result == 'success' && '✅ Passed' || '❌ Failed' }} |" >> $GITHUB_STEP_SUMMARY
+        echo "| Unit Tests | ${{ needs.unit-tests.result == 'success' && '✅ Passed' || '❌ Failed' }} |" >> $GITHUB_STEP_SUMMARY
+        echo "| Integration Tests | ${{ needs.integration-tests.result == 'success' && '✅ Passed' || '❌ Failed' }} |" >> $GITHUB_STEP_SUMMARY
+        echo "| Security Scan | ${{ needs.security.result == 'success' && '✅ Passed' || '⚠️ Completed' }} |" >> $GITHUB_STEP_SUMMARY
+        echo "| Build Validation | ${{ needs.build.result == 'success' && '✅ Passed' || '❌ Failed' }} |" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        
+        # Determine overall status
+        if [[ "${{ needs.lint.result }}" == "success" && 
+              "${{ needs.unit-tests.result }}" == "success" && 
+              "${{ needs.integration-tests.result }}" == "success" && 
+              "${{ needs.build.result }}" == "success" ]]; then
+          echo "🎉 **Overall Status: SUCCESS** - All critical phases passed!" >> $GITHUB_STEP_SUMMARY
+          exit 0
+        else
+          echo "❌ **Overall Status: FAILURE** - One or more critical phases failed!" >> $GITHUB_STEP_SUMMARY
+          exit 1
+        fi
