@@ -1,6 +1,7 @@
 """
 Image validation and preprocessing service
 """
+
 import hashlib
 import io
 import os

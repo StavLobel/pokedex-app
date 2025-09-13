@@ -1,6 +1,7 @@
 """
 Unit tests for health check endpoints
 """
+
 import os
 import time
 from unittest.mock import MagicMock, patch

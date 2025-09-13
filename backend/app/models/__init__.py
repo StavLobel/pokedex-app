@@ -1,11 +1,28 @@
 # Models package
-from .ai import (AIServiceError, BoundingBox, ImageProcessingConfig,
-                 ImageProcessingError, ModelInfo, ModelNotLoadedError,
-                 ModelType, PokemonIdentification, Prediction,
-                 PredictionConfidence, PredictionError)
-from .pokemon import (PokemonAbility, PokemonAPIError, PokemonData,
-                      PokemonNotFoundError, PokemonSpecies, PokemonSprites,
-                      PokemonStat, PokemonSummary, PokemonType)
+from .ai import (
+    AIServiceError,
+    BoundingBox,
+    ImageProcessingConfig,
+    ImageProcessingError,
+    ModelInfo,
+    ModelNotLoadedError,
+    ModelType,
+    PokemonIdentification,
+    Prediction,
+    PredictionConfidence,
+    PredictionError,
+)
+from .pokemon import (
+    PokemonAbility,
+    PokemonAPIError,
+    PokemonData,
+    PokemonNotFoundError,
+    PokemonSpecies,
+    PokemonSprites,
+    PokemonStat,
+    PokemonSummary,
+    PokemonType,
+)
 
 __all__ = [
     # Pokemon models

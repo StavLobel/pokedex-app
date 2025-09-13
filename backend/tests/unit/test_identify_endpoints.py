@@ -1,6 +1,7 @@
 """
 Unit tests for identify API endpoints
 """
+
 import io
 from unittest.mock import patch
 

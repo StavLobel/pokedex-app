@@ -1,6 +1,7 @@
 """
 Pydantic models for Pokemon data structures matching PokéAPI response format.
 """
+
 from typing import Any, Dict, List, Optional
 
 from pydantic import BaseModel, Field, field_validator

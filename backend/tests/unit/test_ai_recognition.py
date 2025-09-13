@@ -1,6 +1,7 @@
 """
 Unit tests for AI recognition service and mock classifier.
 """
+
 import asyncio
 import io
 from unittest.mock import Mock, patch
@@ -9,13 +10,22 @@ import numpy as np
 import pytest
 from PIL import Image
 
-from app.models.ai import (BoundingBox, ImageProcessingConfig,
-                           ImageProcessingError, ModelInfo,
-                           ModelNotLoadedError, ModelType,
-                           PokemonIdentification, Prediction, PredictionError)
-from app.services.ai_recognition import (ImageRecognitionService,
-                                         MockPokemonClassifier,
-                                         get_recognition_service)
+from app.models.ai import (
+    BoundingBox,
+    ImageProcessingConfig,
+    ImageProcessingError,
+    ModelInfo,
+    ModelNotLoadedError,
+    ModelType,
+    PokemonIdentification,
+    Prediction,
+    PredictionError,
+)
+from app.services.ai_recognition import (
+    ImageRecognitionService,
+    MockPokemonClassifier,
+    get_recognition_service,
+)
 
 
 class TestImageProcessingConfig:

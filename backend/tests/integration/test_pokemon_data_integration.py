@@ -2,10 +2,10 @@
 Integration tests for Pokemon data service with real PokéAPI calls.
 These tests are marked as integration and can be skipped in CI if needed.
 """
+
 import pytest
 
-from app.models.pokemon import (PokemonData, PokemonNotFoundError,
-                                PokemonSummary)
+from app.models.pokemon import PokemonData, PokemonNotFoundError, PokemonSummary
 from app.services.pokemon_data import PokemonDataService
 
 

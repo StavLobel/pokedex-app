@@ -1,6 +1,7 @@
 """
 Application configuration settings
 """
+
 from functools import lru_cache
 from typing import List
 

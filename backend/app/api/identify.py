@@ -1,6 +1,7 @@
 """
 Pokemon identification API endpoints
 """
+
 import time
 from typing import Any, Dict, List, Optional
 
@@ -9,8 +10,7 @@ from fastapi import APIRouter, Depends, File, HTTPException, UploadFile
 from pydantic import BaseModel, Field
 
 from app.core.config import get_settings
-from app.services.image_validation import (ImageValidationError,
-                                           image_validation_service)
+from app.services.image_validation import ImageValidationError, image_validation_service
 
 logger = structlog.get_logger(__name__)
 router = APIRouter()

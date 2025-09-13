@@ -1,6 +1,7 @@
 """
 Integration test specific fixtures
 """
+
 import pytest
 from faker import Faker
 

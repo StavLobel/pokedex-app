@@ -1,6 +1,7 @@
 """
 AI-powered Pokemon recognition service with mock implementation for development.
 """
+
 import asyncio
 import hashlib
 import io
@@ -14,10 +15,17 @@ import numpy as np
 from PIL import Image
 
 from ..core.config import get_settings
-from ..models.ai import (BoundingBox, ImageProcessingConfig,
-                         ImageProcessingError, ModelInfo, ModelNotLoadedError,
-                         ModelType, PokemonIdentification, Prediction,
-                         PredictionError)
+from ..models.ai import (
+    BoundingBox,
+    ImageProcessingConfig,
+    ImageProcessingError,
+    ModelInfo,
+    ModelNotLoadedError,
+    ModelType,
+    PokemonIdentification,
+    Prediction,
+    PredictionError,
+)
 
 
 class PokemonClassifier(ABC):

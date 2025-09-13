@@ -1,6 +1,7 @@
 """
 Health check and monitoring endpoints
 """
+
 import os
 import time
 from typing import Any, Dict, Optional

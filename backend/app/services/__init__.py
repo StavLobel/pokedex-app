@@ -1,8 +1,7 @@
 # Services package
 from .ai_recognition import ImageRecognitionService, get_recognition_service
 from .image_validation import ImageValidationService
-from .pokemon_data import (PokemonDataService, get_pokemon_service,
-                           set_pokemon_service)
+from .pokemon_data import PokemonDataService, get_pokemon_service, set_pokemon_service
 
 __all__ = [
     "PokemonDataService",

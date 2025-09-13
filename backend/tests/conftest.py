@@ -1,6 +1,7 @@
 """
 Global test configuration and fixtures
 """
+
 import io
 from unittest.mock import AsyncMock, Mock
 

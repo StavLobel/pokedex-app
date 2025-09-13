@@ -1,6 +1,7 @@
 """
 Integration tests for complete image upload and validation flow
 """
+
 import io
 
 import pytest

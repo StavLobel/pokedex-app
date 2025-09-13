@@ -1,6 +1,7 @@
 """
 Pokemon data service for fetching and caching Pokemon information from PokéAPI.
 """
+
 import asyncio
 import json
 import logging
@@ -9,8 +10,12 @@ from urllib.parse import urljoin
 
 import httpx
 
-from app.models.pokemon import (PokemonAPIError, PokemonData,
-                                PokemonNotFoundError, PokemonSummary)
+from app.models.pokemon import (
+    PokemonAPIError,
+    PokemonData,
+    PokemonNotFoundError,
+    PokemonSummary,
+)
 
 logger = logging.getLogger(__name__)
 

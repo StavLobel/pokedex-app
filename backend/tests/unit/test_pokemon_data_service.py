@@ -1,16 +1,24 @@
 """
 Unit tests for Pokemon data service with mocked PokéAPI responses.
 """
+
 import json
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import httpx
 import pytest
 
-from app.models.pokemon import (PokemonAPIError, PokemonData,
-                                PokemonNotFoundError, PokemonSummary)
-from app.services.pokemon_data import (PokemonDataService, get_pokemon_service,
-                                       set_pokemon_service)
+from app.models.pokemon import (
+    PokemonAPIError,
+    PokemonData,
+    PokemonNotFoundError,
+    PokemonSummary,
+)
+from app.services.pokemon_data import (
+    PokemonDataService,
+    get_pokemon_service,
+    set_pokemon_service,
+)
 
 
 class TestPokemonDataService:

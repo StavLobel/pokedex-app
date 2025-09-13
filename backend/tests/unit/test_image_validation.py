@@ -1,6 +1,7 @@
 """
 Unit tests for image validation service
 """
+
 import io
 from unittest.mock import AsyncMock, Mock
 
@@ -9,8 +10,7 @@ import pytest
 from faker import Faker
 from PIL import Image
 
-from app.services.image_validation import (ImageValidationError,
-                                           ImageValidationService)
+from app.services.image_validation import ImageValidationError, ImageValidationService
 
 fake = Faker()
 

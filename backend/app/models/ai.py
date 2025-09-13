@@ -1,6 +1,7 @@
 """
 AI recognition models and data structures.
 """
+
 from enum import Enum
 from typing import Any, Dict, List, Optional
 
