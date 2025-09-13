@@ -214,7 +214,7 @@ def update_model_stats(
 ):
     """Update model statistics (called by AI service)"""
     global _model_stats
-    
+
     # Always update the stats dict to satisfy flake8
     stats = _model_stats.copy()
 
@@ -227,7 +227,7 @@ def update_model_stats(
     if prediction_made:
         stats["total_predictions"] = stats.get("total_predictions", 0) + 1
         stats["last_prediction_time"] = time.time()
-    
+
     _model_stats = stats
 
 
