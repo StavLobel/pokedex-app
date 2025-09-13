@@ -191,8 +191,9 @@ class TestModelStatusEndpoint:
         mock_stat.st_size = 1024 * 1024 * 50  # 50MB
         mock_stat.st_mtime = time.time()
 
-        with patch("os.path.exists", return_value=True), patch(
-            "os.stat", return_value=mock_stat
+        with (
+            patch("os.path.exists", return_value=True),
+            patch("os.stat", return_value=mock_stat),
         ):
             response = client.get("/api/v1/models/status")
 
@@ -212,8 +213,12 @@ class TestModelStatusEndpoint:
         update_model_stats(prediction_made=True)
         update_model_stats(prediction_made=True)
 
-        with patch("os.path.exists", return_value=True), patch(
-            "os.stat", return_value=MagicMock(st_size=1024 * 1024, st_mtime=time.time())
+        with (
+            patch("os.path.exists", return_value=True),
+            patch(
+                "os.stat",
+                return_value=MagicMock(st_size=1024 * 1024, st_mtime=time.time()),
+            ),
         ):
             response = client.get("/api/v1/models/status")
 
