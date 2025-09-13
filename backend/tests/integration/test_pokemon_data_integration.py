@@ -19,35 +19,35 @@ class TestPokemonDataServiceIntegration:
         return PokemonDataService(timeout=30.0)  # Longer timeout for real API calls
 
     @pytest.mark.asyncio
-    async def test_get_pikachu_by_id_real_api(self, service):
+    async def test_get_pikachu_by_id_real_api(self, service, check):
         """Test fetching Pikachu by ID from real PokéAPI."""
         try:
             result = await service.get_pokemon_by_id(25)
 
-            assert isinstance(result, PokemonData)
-            assert result.id == 25
-            assert result.name == "pikachu"
-            assert "electric" in result.get_all_types()
-            assert result.sprites.front_default is not None
+            check.is_true(isinstance(result, PokemonData))
+            check.equal(result.id, 25)
+            check.equal(result.name, "pikachu")
+            check.is_in("electric", result.get_all_types())
+            check.is_not(result.sprites.front_default, None)
 
         except Exception as e:
             pytest.skip(f"Real API test skipped due to network issue: {e}")
 
     @pytest.mark.asyncio
-    async def test_get_pikachu_by_name_real_api(self, service):
+    async def test_get_pikachu_by_name_real_api(self, service, check):
         """Test fetching Pikachu by name from real PokéAPI."""
         try:
             result = await service.get_pokemon_by_name("pikachu")
 
-            assert isinstance(result, PokemonData)
-            assert result.id == 25
-            assert result.name == "pikachu"
+            check.is_true(isinstance(result, PokemonData))
+            check.equal(result.id, 25)
+            check.equal(result.name, "pikachu")
 
         except Exception as e:
             pytest.skip(f"Real API test skipped due to network issue: {e}")
 
     @pytest.mark.asyncio
-    async def test_get_nonexistent_pokemon_real_api(self, service):
+    async def test_get_nonexistent_pokemon_real_api(self, service, check):
         """Test fetching non-existent Pokemon from real PokéAPI."""
         try:
             with pytest.raises(PokemonNotFoundError):
@@ -57,7 +57,7 @@ class TestPokemonDataServiceIntegration:
             pytest.skip(f"Real API test skipped due to network issue: {e}")
 
     @pytest.mark.asyncio
-    async def test_caching_with_real_api(self, service):
+    async def test_caching_with_real_api(self, service, check):
         """Test caching functionality with real API calls."""
         try:
             # First call should hit the API
@@ -67,26 +67,26 @@ class TestPokemonDataServiceIntegration:
             result2 = await service.get_pokemon_by_id(1)
 
             # Results should be identical
-            assert result1.id == result2.id
-            assert result1.name == result2.name
+            check.equal(result1.id, result2.id)
+            check.equal(result1.name, result2.name)
 
             # Check cache stats
             stats = service.get_cache_stats()
-            assert stats["total_entries"] >= 1
+            check.greater_equal(stats["total_entries"], 1)
 
         except Exception as e:
             pytest.skip(f"Real API test skipped due to network issue: {e}")
 
     @pytest.mark.asyncio
-    async def test_pokemon_summary_real_api(self, service):
+    async def test_pokemon_summary_real_api(self, service, check):
         """Test Pokemon summary with real API."""
         try:
             summary = await service.get_pokemon_summary_by_id(150)  # Mewtwo
 
-            assert isinstance(summary, PokemonSummary)
-            assert summary.id == 150
-            assert summary.name == "mewtwo"
-            assert "psychic" in summary.types
+            check.is_true(isinstance(summary, PokemonSummary))
+            check.equal(summary.id, 150)
+            check.equal(summary.name, "mewtwo")
+            check.is_in("psychic", summary.types)
 
         except Exception as e:
             pytest.skip(f"Real API test skipped due to network issue: {e}")
