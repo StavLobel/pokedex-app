@@ -4,19 +4,18 @@ FastAPI main application entry point
 import logging
 import time
 from contextlib import asynccontextmanager
-from typing import Dict, Any
+from typing import Any, Dict
 
-from fastapi import FastAPI, Request, HTTPException
+import structlog
+from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.trustedhost import TrustedHostMiddleware
 from fastapi.responses import JSONResponse
-import structlog
 
 from app.api.health import router as health_router
 from app.api.identify import router as identify_router
 from app.core.config import get_settings
 from app.core.logging import setup_logging
-
 
 # Setup structured logging
 setup_logging()
@@ -63,10 +62,10 @@ app.add_middleware(
 async def logging_middleware(request: Request, call_next):
     """Log all HTTP requests with timing information"""
     start_time = time.time()
-    
+
     # Generate request ID for tracing
     request_id = f"req_{int(time.time() * 1000000)}"
-    
+
     logger.info(
         "Request started",
         method=request.method,
@@ -75,11 +74,11 @@ async def logging_middleware(request: Request, call_next):
         user_agent=request.headers.get("user-agent"),
         client_ip=request.client.host if request.client else None,
     )
-    
+
     try:
         response = await call_next(request)
         process_time = time.time() - start_time
-        
+
         logger.info(
             "Request completed",
             method=request.method,
@@ -88,11 +87,11 @@ async def logging_middleware(request: Request, call_next):
             status_code=response.status_code,
             process_time_ms=round(process_time * 1000, 2),
         )
-        
+
         # Add request ID to response headers
         response.headers["X-Request-ID"] = request_id
         return response
-        
+
     except Exception as exc:
         process_time = time.time() - start_time
         logger.error(
@@ -110,7 +109,7 @@ async def logging_middleware(request: Request, call_next):
 async def http_exception_handler(request: Request, exc: HTTPException):
     """Custom HTTP exception handler with structured error responses"""
     request_id = getattr(request.state, "request_id", "unknown")
-    
+
     logger.warning(
         "HTTP exception occurred",
         status_code=exc.status_code,
@@ -119,7 +118,7 @@ async def http_exception_handler(request: Request, exc: HTTPException):
         method=request.method,
         url=str(request.url),
     )
-    
+
     return JSONResponse(
         status_code=exc.status_code,
         content={
@@ -130,7 +129,7 @@ async def http_exception_handler(request: Request, exc: HTTPException):
             },
             "timestamp": time.time(),
             "request_id": request_id,
-        }
+        },
     )
 
 
@@ -138,7 +137,7 @@ async def http_exception_handler(request: Request, exc: HTTPException):
 async def general_exception_handler(request: Request, exc: Exception):
     """General exception handler for unhandled errors"""
     request_id = getattr(request.state, "request_id", "unknown")
-    
+
     logger.error(
         "Unhandled exception occurred",
         error=str(exc),
@@ -147,7 +146,7 @@ async def general_exception_handler(request: Request, exc: Exception):
         method=request.method,
         url=str(request.url),
     )
-    
+
     return JSONResponse(
         status_code=500,
         content={
@@ -158,7 +157,7 @@ async def general_exception_handler(request: Request, exc: Exception):
             },
             "timestamp": time.time(),
             "request_id": request_id,
-        }
+        },
     )
 
 

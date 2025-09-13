@@ -14,14 +14,14 @@ from app.core.config import get_settings
 def setup_logging() -> None:
     """Configure structured logging for the application"""
     settings = get_settings()
-    
+
     # Configure standard library logging
     logging.basicConfig(
         format="%(message)s",
         stream=sys.stdout,
         level=getattr(logging, settings.log_level.upper()),
     )
-    
+
     # Configure structlog
     if settings.log_format == "json":
         # JSON format for production
@@ -35,7 +35,7 @@ def setup_logging() -> None:
                 structlog.processors.StackInfoRenderer(),
                 structlog.processors.format_exc_info,
                 structlog.processors.UnicodeDecoder(),
-                structlog.processors.JSONRenderer()
+                structlog.processors.JSONRenderer(),
             ],
             context_class=dict,
             logger_factory=LoggerFactory(),
@@ -51,7 +51,7 @@ def setup_logging() -> None:
                 structlog.stdlib.add_log_level,
                 structlog.stdlib.PositionalArgumentsFormatter(),
                 structlog.processors.TimeStamper(fmt="%Y-%m-%d %H:%M:%S"),
-                structlog.dev.ConsoleRenderer(colors=True)
+                structlog.dev.ConsoleRenderer(colors=True),
             ],
             context_class=dict,
             logger_factory=LoggerFactory(),

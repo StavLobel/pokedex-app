@@ -22,7 +22,7 @@ def sample_error_code():
 @pytest.fixture
 def random_file_size():
     """Generate a random file size for testing"""
-    return fake.random_int(min=1024, max=10*1024*1024)
+    return fake.random_int(min=1024, max=10 * 1024 * 1024)
 
 
 @pytest.fixture

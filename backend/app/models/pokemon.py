@@ -1,18 +1,21 @@
 """
 Pydantic models for Pokemon data structures matching PokéAPI response format.
 """
-from typing import List, Optional, Dict, Any
+from typing import Any, Dict, List, Optional
+
 from pydantic import BaseModel, Field, field_validator
 
 
 class PokemonType(BaseModel):
     """Pokemon type information."""
+
     slot: int
     type: Dict[str, str]  # {"name": "electric", "url": "..."}
 
 
 class PokemonAbility(BaseModel):
     """Pokemon ability information."""
+
     is_hidden: bool
     slot: int
     ability: Dict[str, str]  # {"name": "static", "url": "..."}
@@ -20,6 +23,7 @@ class PokemonAbility(BaseModel):
 
 class PokemonStat(BaseModel):
     """Pokemon base stat information."""
+
     base_stat: int
     effort: int
     stat: Dict[str, str]  # {"name": "hp", "url": "..."}
@@ -27,6 +31,7 @@ class PokemonStat(BaseModel):
 
 class PokemonSprites(BaseModel):
     """Pokemon sprite URLs."""
+
     front_default: Optional[str] = None
     front_shiny: Optional[str] = None
     front_female: Optional[str] = None
@@ -41,12 +46,14 @@ class PokemonSprites(BaseModel):
 
 class PokemonSpecies(BaseModel):
     """Pokemon species information."""
+
     name: str
     url: str
 
 
 class PokemonData(BaseModel):
     """Complete Pokemon data model matching PokéAPI response."""
+
     id: int
     name: str
     base_experience: Optional[int] = None
@@ -66,20 +73,20 @@ class PokemonData(BaseModel):
     types: List[PokemonType]
     past_types: List[Dict[str, Any]] = []
 
-    @field_validator('name')
+    @field_validator("name")
     @classmethod
     def validate_name(cls, v):
         """Ensure name is not empty."""
         if not v or not v.strip():
-            raise ValueError('Pokemon name cannot be empty')
+            raise ValueError("Pokemon name cannot be empty")
         return v.lower().strip()
 
-    @field_validator('id')
+    @field_validator("id")
     @classmethod
     def validate_id(cls, v):
         """Ensure ID is positive."""
         if v <= 0:
-            raise ValueError('Pokemon ID must be positive')
+            raise ValueError("Pokemon ID must be positive")
         return v
 
     def get_primary_type(self) -> str:
@@ -103,6 +110,7 @@ class PokemonData(BaseModel):
 
 class PokemonSummary(BaseModel):
     """Simplified Pokemon data for quick responses."""
+
     id: int
     name: str
     types: List[str]
@@ -119,15 +127,17 @@ class PokemonSummary(BaseModel):
             types=pokemon_data.get_all_types(),
             sprite_url=pokemon_data.sprites.front_default,
             height=pokemon_data.height,
-            weight=pokemon_data.weight
+            weight=pokemon_data.weight,
         )
 
 
 class PokemonNotFoundError(Exception):
     """Raised when a Pokemon is not found."""
+
     pass
 
 
 class PokemonAPIError(Exception):
     """Raised when there's an error with the PokéAPI."""
+
     pass
