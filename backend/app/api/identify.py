@@ -10,7 +10,10 @@ from fastapi import APIRouter, Depends, File, HTTPException, UploadFile
 from pydantic import BaseModel, Field
 
 from app.core.config import get_settings
+from app.models.ai import ImageProcessingError, ModelNotLoadedError, PredictionError
+from app.services.ai_recognition import get_recognition_service
 from app.services.image_validation import ImageValidationError, image_validation_service
+from app.services.pokemon_data import get_pokemon_service
 
 logger = structlog.get_logger(__name__)
 router = APIRouter()
